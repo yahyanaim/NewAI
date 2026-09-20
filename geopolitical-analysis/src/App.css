@@ -1,0 +1,315 @@
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+}
+
+/* Custom Scrollbar Styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 206, 209, 0.05);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 206, 209, 0.3);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 206, 209, 0.5);
+}
+
+/* Firefox scrollbar styles */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 206, 209, 0.3) rgba(0, 206, 209, 0.05);
+}
+
+/* Glassmorphism panel effect */
+.glass-panel {
+  background: rgba(27, 42, 58, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Smooth transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-duration: 200ms;
+  transition-timing-function: ease-out;
+}
+
+/* Remove transitions for animations */
+.animate-pulse,
+.animate-pulse-slow,
+.animate-marquee,
+.animate-ping-slow {
+  transition: none;
+}
+
+/* Marquee animation pause on hover */
+.animate-marquee:hover {
+  animation-play-state: paused !important;
+}
+
+/* 3D Transform utilities */
+.transform-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-800 {
+  perspective: 800px;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Depth utilities for 3D layering */
+.depth-background {
+  transform: translateZ(-100px);
+}
+
+.depth-neutral {
+  transform: translateZ(0px);
+}
+
+.depth-elevated {
+  transform: translateZ(50px);
+}
+
+.depth-floating {
+  transform: translateZ(100px);
+}
+
+/* Selection styling */
+::selection {
+  background-color: rgba(0, 206, 209, 0.3);
+  color: #FFFFFF;
+}
+
+/* New event styling animations */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+/* New content notification banner */
+.notification-banner {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Enhanced border pulse for new items */
+@keyframes border-pulse {
+  0%, 100% {
+    border-color: rgba(0, 206, 209, 0.8);
+    box-shadow: 0 0 10px rgba(0, 206, 209, 0.4);
+  }
+  50% {
+    border-color: rgba(0, 255, 255, 1);
+    box-shadow: 0 0 20px rgba(0, 206, 209, 0.6);
+  }
+}
+
+.animate-border-pulse {
+  animation: border-pulse 2s ease-in-out infinite;
+}
+
+/* Ping animation - glow and scale */
+@keyframes ping-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 206, 209, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 25px 5px rgba(0, 206, 209, 0.5);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 206, 209, 0);
+    transform: scale(1);
+  }
+}
+
+.animate-ping-glow {
+  animation: ping-glow 0.6s ease-out;
+}
+
+/* Icon notification pulse */
+@keyframes icon-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.animate-icon-pulse {
+  animation: icon-pulse 1.5s ease-in-out infinite;
+}
+
+/* Gradient border animation */
+@keyframes gradient-border {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-border {
+  background-size: 200% 200%;
+  animation: gradient-border 3s ease infinite;
+}
+
+/* Badge pop animation for notification counter */
+@keyframes badge-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-badge-pop {
+  animation: badge-pop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Ultra-new article styling (0-10 seconds) - Minimalist approach */
+@keyframes ultra-new-subtle {
+  0%, 100% {
+    background-color: rgba(0, 206, 209, 0.08);
+  }
+  50% {
+    background-color: rgba(0, 206, 209, 0.12);
+  }
+}
+
+.animate-ultra-new {
+  animation: ultra-new-subtle 2s ease-in-out infinite;
+}
+
+/* Shake animation for ultra-new articles */
+@keyframes shake-subtle {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+.animate-shake-subtle {
+  animation: shake-subtle 0.5s ease-in-out;
+}
+
+/* Top news ping button pulse */
+@keyframes top-ping-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+  }
+}
+
+.animate-top-ping {
+  animation: top-ping-pulse 2s ease-in-out infinite;
+}
+
+/* Heartbeat for LIVE status */
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.15); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.15); }
+  70% { transform: scale(1); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2s infinite ease-in-out;
+}
+
+/* Float animation for overlays */
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-floating {
+  animation: floating 4s ease-in-out infinite;
+}
+
+/* Glow pulse for interactive elements */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 206, 209, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(0, 206, 209, 0.8); }
+}
+
+.glow-on-hover:hover {
+  animation: glow-pulse 1.5s infinite;
+}
+
+/* Slide in from bottom */
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

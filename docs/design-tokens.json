@@ -1,0 +1,421 @@
+{
+  "color": {
+    "background": {
+      "base": {
+        "value": "#0A1425",
+        "type": "color",
+        "description": "Main canvas deep dark blue"
+      },
+      "surface": {
+        "value": "#1B2A3A",
+        "type": "color",
+        "description": "Elevated cards, panels"
+      },
+      "elevated": {
+        "value": "#2C3E50",
+        "type": "color",
+        "description": "Floating panels, modals"
+      },
+      "gradient-depth": {
+        "value": "linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%)",
+        "type": "color",
+        "description": "Section backgrounds for atmospheric perspective"
+      }
+    },
+    "text": {
+      "primary": {
+        "value": "#e5e5e5",
+        "type": "color",
+        "description": "Headlines, labels (19.2:1 contrast on base)"
+      },
+      "secondary": {
+        "value": "#a3a3a3",
+        "type": "color",
+        "description": "Body text, descriptions (7.8:1 contrast)"
+      },
+      "tertiary": {
+        "value": "#737373",
+        "type": "color",
+        "description": "Metadata, timestamps (4.6:1 contrast)"
+      }
+    },
+    "accent": {
+      "primary": {
+        "value": "#00CED1",
+        "type": "color",
+        "description": "Teal/Cyan primary brand color"
+      },
+      "secondary": {
+        "value": "#20B2AA",
+        "type": "color",
+        "description": "Light sea green accent"
+      },
+      "gradient": {
+        "value": "linear-gradient(135deg, #00CED1, #20B2AA)",
+        "type": "color",
+        "description": "Teal gradient for backgrounds"
+      },
+      "glow": {
+        "value": "rgba(0, 206, 209, 0.6)",
+        "type": "color",
+        "description": "Teal glow effect"
+      }
+    },
+    "semantic": {
+      "positive": {
+        "value": "#00FF7F",
+        "type": "color",
+        "description": "Positive sentiment - Spring Green"
+      },
+      "neutral": {
+        "value": "#FFA500",
+        "type": "color",
+        "description": "Neutral sentiment - Orange"
+      },
+      "negative": {
+        "value": "#FF4444",
+        "type": "color",
+        "description": "Negative sentiment - Red"
+      },
+      "live": {
+        "value": "#32CD32",
+        "type": "color",
+        "description": "LIVE indicator - Lime Green"
+      },
+      "warning": {
+        "value": "#FFD700",
+        "type": "color",
+        "description": "Warning state - Gold"
+      },
+      "conflict-low": {
+        "value": "#10b981",
+        "type": "color",
+        "description": "Low conflict intensity (Green-500)"
+      },
+      "conflict-medium": {
+        "value": "#f59e0b",
+        "type": "color",
+        "description": "Medium conflict intensity (Amber-500)"
+      },
+      "conflict-high": {
+        "value": "#ef4444",
+        "type": "color",
+        "description": "High conflict intensity (Red-500)"
+      },
+      "conflict-critical": {
+        "value": "#dc2626",
+        "type": "color",
+        "description": "Critical conflict zones (Red-600)"
+      }
+    },
+    "overlay": {
+      "dark": {
+        "value": "rgba(10, 10, 10, 0.8)",
+        "type": "color",
+        "description": "Modal backdrops"
+      },
+      "glass": {
+        "value": "rgba(20, 20, 20, 0.6)",
+        "type": "color",
+        "description": "Glassmorphic panels with backdrop-blur"
+      }
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": {
+        "value": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        "type": "fontFamily",
+        "description": "Geometric sans-serif for all text"
+      }
+    },
+    "fontSize": {
+      "hero-3d": {
+        "value": "96px",
+        "type": "dimension",
+        "description": "3D transformed page title (desktop)"
+      },
+      "heading-xl": {
+        "value": "48px",
+        "type": "dimension",
+        "description": "Section headers"
+      },
+      "heading-lg": {
+        "value": "36px",
+        "type": "dimension",
+        "description": "Modal titles"
+      },
+      "heading-md": {
+        "value": "24px",
+        "type": "dimension",
+        "description": "Card titles, country names"
+      },
+      "body-lg": {
+        "value": "20px",
+        "type": "dimension",
+        "description": "Intro text, descriptions"
+      },
+      "body": {
+        "value": "16px",
+        "type": "dimension",
+        "description": "Standard text, news articles"
+      },
+      "body-sm": {
+        "value": "14px",
+        "type": "dimension",
+        "description": "Metadata, timestamps"
+      },
+      "caption": {
+        "value": "12px",
+        "type": "dimension",
+        "description": "Labels, attribution"
+      }
+    },
+    "fontWeight": {
+      "regular": {
+        "value": "400",
+        "type": "fontWeight"
+      },
+      "medium": {
+        "value": "500",
+        "type": "fontWeight"
+      },
+      "semibold": {
+        "value": "600",
+        "type": "fontWeight"
+      },
+      "bold": {
+        "value": "700",
+        "type": "fontWeight"
+      }
+    },
+    "lineHeight": {
+      "hero": {
+        "value": "1.0",
+        "type": "number",
+        "description": "3D headlines"
+      },
+      "heading": {
+        "value": "1.2",
+        "type": "number",
+        "description": "Section headers"
+      },
+      "subheading": {
+        "value": "1.3",
+        "type": "number",
+        "description": "Card titles"
+      },
+      "body": {
+        "value": "1.5",
+        "type": "number",
+        "description": "Standard text"
+      },
+      "body-relaxed": {
+        "value": "1.6",
+        "type": "number",
+        "description": "Large body text"
+      }
+    },
+    "letterSpacing": {
+      "tight": {
+        "value": "-0.03em",
+        "type": "dimension",
+        "description": "Hero 3D text"
+      },
+      "normal": {
+        "value": "0em",
+        "type": "dimension"
+      },
+      "wide": {
+        "value": "0.02em",
+        "type": "dimension",
+        "description": "Captions, small text"
+      }
+    }
+  },
+  "spacing": {
+    "space-1": {
+      "value": "8px",
+      "type": "dimension",
+      "description": "Tight gaps, icon spacing"
+    },
+    "space-2": {
+      "value": "16px",
+      "type": "dimension",
+      "description": "Element spacing, button padding"
+    },
+    "space-3": {
+      "value": "24px",
+      "type": "dimension",
+      "description": "Card padding, component gaps"
+    },
+    "space-4": {
+      "value": "32px",
+      "type": "dimension",
+      "description": "Section padding"
+    },
+    "space-6": {
+      "value": "48px",
+      "type": "dimension",
+      "description": "Section margins"
+    },
+    "space-8": {
+      "value": "64px",
+      "type": "dimension",
+      "description": "Large spacing, hero padding"
+    },
+    "space-12": {
+      "value": "96px",
+      "type": "dimension",
+      "description": "Extra large spacing"
+    },
+    "space-16": {
+      "value": "128px",
+      "type": "dimension",
+      "description": "Maximum spacing"
+    },
+    "depth": {
+      "background": {
+        "value": "translateZ(-100px)",
+        "type": "transform",
+        "description": "Far elements, globe base layer"
+      },
+      "neutral": {
+        "value": "translateZ(0px)",
+        "type": "transform",
+        "description": "Main content plane"
+      },
+      "elevated": {
+        "value": "translateZ(50px)",
+        "type": "transform",
+        "description": "News sidebar, filter panel"
+      },
+      "floating": {
+        "value": "translateZ(100px)",
+        "type": "transform",
+        "description": "Country modal, tooltips"
+      },
+      "foreground": {
+        "value": "translateZ(200px)",
+        "type": "transform",
+        "description": "Active 3D elements"
+      }
+    }
+  },
+  "borderRadius": {
+    "sm": {
+      "value": "12px",
+      "type": "dimension",
+      "description": "Buttons, input fields"
+    },
+    "md": {
+      "value": "16px",
+      "type": "dimension",
+      "description": "Cards, images"
+    },
+    "lg": {
+      "value": "20px",
+      "type": "dimension",
+      "description": "Large cards, panels"
+    },
+    "xl": {
+      "value": "24px",
+      "type": "dimension",
+      "description": "Modals, major sections"
+    },
+    "full": {
+      "value": "9999px",
+      "type": "dimension",
+      "description": "Circular icons, badges"
+    }
+  },
+  "boxShadow": {
+    "far": {
+      "value": "0 2px 8px rgba(0, 0, 0, 0.08)",
+      "type": "boxShadow",
+      "description": "Background elements"
+    },
+    "mid": {
+      "value": "0 8px 24px rgba(0, 0, 0, 0.12)",
+      "type": "boxShadow",
+      "description": "Standard cards"
+    },
+    "near": {
+      "value": "0 16px 48px rgba(0, 0, 0, 0.18)",
+      "type": "boxShadow",
+      "description": "Elevated panels"
+    },
+    "float": {
+      "value": "0 24px 64px rgba(0, 0, 0, 0.24)",
+      "type": "boxShadow",
+      "description": "Floating modals"
+    },
+    "accent-glow": {
+      "value": "0 8px 24px rgba(59, 130, 246, 0.4), 0 0 40px rgba(59, 130, 246, 0.2)",
+      "type": "boxShadow",
+      "description": "3D interactive elements with glow"
+    }
+  },
+  "animation": {
+    "duration": {
+      "fast": {
+        "value": "200ms",
+        "type": "duration",
+        "description": "Button hover, quick feedback"
+      },
+      "standard": {
+        "value": "400ms",
+        "type": "duration",
+        "description": "Card 3D transforms, smooth transitions"
+      },
+      "slow": {
+        "value": "600ms",
+        "type": "duration",
+        "description": "Modal open/close, panel slides"
+      },
+      "parallax": {
+        "value": "1000ms",
+        "type": "duration",
+        "description": "Page load 3D intros"
+      }
+    },
+    "easing": {
+      "default": {
+        "value": "ease-out",
+        "type": "cubicBezier",
+        "description": "Standard easing for most transitions"
+      },
+      "elastic": {
+        "value": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "type": "cubicBezier",
+        "description": "3D transforms with bounce effect"
+      }
+    }
+  },
+  "other": {
+    "perspective": {
+      "globe": {
+        "value": "1000px",
+        "type": "dimension",
+        "description": "Globe container perspective"
+      },
+      "card": {
+        "value": "800px",
+        "type": "dimension",
+        "description": "Interactive card perspective"
+      },
+      "modal": {
+        "value": "1200px",
+        "type": "dimension",
+        "description": "Country modal perspective"
+      }
+    },
+    "backdropBlur": {
+      "glass": {
+        "value": "20px",
+        "type": "dimension",
+        "description": "Glassmorphic panels blur amount"
+      }
+    }
+  }
+}

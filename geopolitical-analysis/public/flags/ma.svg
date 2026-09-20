@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64" role="img" aria-label="Morocco flag">
+  <!-- Red field -->
+  <rect width="100%" height="100%" fill="#C1272D" />
+  <!-- Green pentagram (stylized) centered -->
+  <g transform="translate(48 32) scale(1)">
+    <polygon points="0,-18 4.9,-5.6 18,-5.6 7,2.2 11.9,15.4 0,7.8 -11.9,15.4 -7,2.2 -18,-5.6 -4.9,-5.6" fill="#006233" />
+  </g>
+</svg>

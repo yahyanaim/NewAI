@@ -1,0 +1,796 @@
+import { useState, useEffect, useCallback } from 'react';
+import Flag from './Flag';
+import resolveIso2 from '@/lib/resolveIso';
+import { Play, Pause, Volume2, VolumeX, Maximize, RotateCcw, Wifi, WifiOff, RefreshCw, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import type { ConflictIntensity, IntelEvent } from '@/types';
+import { youtubeLiveService, type LiveChannelData } from '@/services/youtubeLiveService';
+
+interface YouTubeNewsCenterProps {
+  conflictData: ConflictIntensity[];
+  intelEvents: IntelEvent[];
+  selectedEventId?: string;
+  onEventClick: (event: IntelEvent) => void;
+}
+
+// Initialize with fallback data (will be updated by the live service)
+const getFallbackChannels = (): LiveChannelData[] => [
+  {
+    id: 'abc',
+    name: 'ABC News Live',
+    country: 'United States',
+    description: '24/7 Live Breaking News from ABC',
+    logo: '🇺🇸',
+    language: 'English',
+    region: 'North America',
+    channelId: 'UCBi2mrWuNuyYy4gbM6fU18Q',
+    videoId: 'w_Ma8oQLmSM',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'nbc',
+    name: 'NBC News Now',
+    country: 'United States',
+    description: 'Breaking news and top stories from NBC',
+    logo: '🇺🇸',
+    language: 'English',
+    region: 'North America',
+    channelId: 'UCeY0bbntWzzVIaj2z3QigXg',
+    videoId: 'eN15cqPnvWk',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'lbc',
+    name: 'LBC News',
+    country: 'United Kingdom',
+    description: 'Leading Britain\'s Conversation',
+    logo: '🇬🇧',
+    language: 'English',
+    region: 'Europe',
+    channelId: 'UCb29n4vQ2y_5r8vO_4F5q4g',
+    videoId: 'Gu0tE4Q2dQQ',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'sky_aus',
+    name: 'Sky News Australia',
+    country: 'Australia',
+    description: 'Real news, honest opinion',
+    logo: '🇦🇺',
+    language: 'English',
+    region: 'Oceania',
+    channelId: 'UCO0akfuqbxUJl-y8_M-LeRw',
+    videoId: 'lCB1x_KFdQg',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'cbc',
+    name: 'CBC News',
+    country: 'Canada',
+    description: 'Canada\'s 24-hour news network',
+    logo: '🇨🇦',
+    language: 'English',
+    region: 'North America',
+    channelId: 'UCnkEhPBMZcEO0lGLTQCdiwA',
+    videoId: 'AranBu6Bwxw',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'ndtv',
+    name: 'NDTV 24x7',
+    country: 'India',
+    description: 'English News from India',
+    logo: '🇮🇳',
+    language: 'English',
+    region: 'Asia',
+    channelId: 'UCZFMm199-6j87uN394ReJ9w',
+    videoId: 'WB-y7_ymPJ4',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'wion',
+    name: 'WION',
+    country: 'India',
+    description: 'World Is One News',
+    logo: '🇮🇳',
+    language: 'English',
+    region: 'Asia',
+    channelId: 'UC_gUM8rL-Lrg6O3adPW9K1g',
+    videoId: 'HuW9k_yWjT0',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'dw',
+    name: 'DW News',
+    country: 'Germany',
+    description: 'Deutsche Welle - International news from Germany',
+    logo: '🇩🇪',
+    language: 'English',
+    region: 'Europe',
+    channelId: 'UCknLrEdhRCp1aegoMqRaCZg',
+    videoId: 'pqabxBEaoG4',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'aljazeera',
+    name: 'Al Jazeera English',
+    country: 'Qatar',
+    description: 'Breaking news and current affairs from the Middle East',
+    logo: '🇶🇦',
+    language: 'English',
+    region: 'Middle East',
+    channelId: 'UCu1F4E1URyUw5G1NEEZJq1Q',
+    videoId: 'gCNeDWCI0vo',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'bbc',
+    name: 'BBC News',
+    country: 'United Kingdom',
+    description: 'Latest news and analysis from the BBC',
+    logo: '🇬🇧',
+    language: 'English',
+    region: 'Europe',
+    channelId: 'UC16niRr50-MSBwiO3YDb3RA',
+    videoId: 'pToB3kRV30Q',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'france24',
+    name: 'France 24 English',
+    country: 'France',
+    description: 'International news from France 24',
+    logo: '🇫🇷',
+    language: 'English',
+    region: 'Europe',
+    channelId: 'UCQ4Hj5DF7VTDOj-_FclBAeg',
+    videoId: 'h3MuIUNCC4I',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'skynews',
+    name: 'Sky News',
+    country: 'United Kingdom',
+    description: 'Breaking news and current affairs from the UK',
+    logo: '🇬🇧',
+    language: 'English',
+    region: 'Europe',
+    channelId: 'UCoMdktPbSTixAyNGwb-UYkQ',
+    videoId: '9Auq9mYxFEE',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'trt',
+    name: 'TRT World',
+    country: 'Turkey',
+    description: 'International news from Turkey',
+    logo: '🇹🇷',
+    language: 'English',
+    region: 'Europe/Asia',
+    channelId: 'UCGrNz-aDmcr2uuto8_DL2jg',
+    videoId: '5VF4aor94gw',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'euronews',
+    name: 'Euronews English',
+    country: 'France',
+    description: 'European and international news',
+    logo: '🇪🇺',
+    language: 'English',
+    region: 'Europe',
+    channelId: 'UC4AEUDQKjjAk5Z-jN5KcJag',
+    videoId: 'pykpO5kQJ98',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'nhk',
+    name: 'NHK World Japan',
+    country: 'Japan',
+    description: 'News and information from Japan and Asia',
+    logo: '🇯🇵',
+    language: 'English',
+    region: 'Asia',
+    channelId: 'UCSPEjw8F2nQDtmUKPFNF7_A',
+    videoId: 'f0lYkdA-Gtw',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'i24news',
+    name: 'i24NEWS English',
+    country: 'Israel',
+    description: 'Unbiased global news from Israel',
+    logo: '🇮🇱',
+    language: 'English',
+    region: 'Middle East',
+    channelId: 'UCjgxKp_63nzBQoBgaxDI9Fg',
+    videoId: 'vJ7y_3tVfks',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'cgtn',
+    name: 'CGTN English',
+    country: 'China',
+    description: 'News and analysis from China Global Television Network',
+    logo: '🇨🇳',
+    language: 'English',
+    region: 'Asia',
+    channelId: 'UCvocnIK2HBoUEgc_Lzxfhnw',
+    videoId: 'RVhJfNLte2s',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'rt',
+    name: 'RT News',
+    country: 'Russia',
+    description: 'Alternative perspective on world news',
+    logo: '🇷🇺',
+    language: 'English',
+    region: 'Europe',
+    channelId: 'UCnCKJw90r-aURn2eU6dXpRQ',
+    videoId: 'V0I5eglJMKE',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: '2m_morocco',
+    name: '2M TV Morocco',
+    country: 'Morocco',
+    description: 'Moroccan national television',
+    logo: '🇲🇦',
+    language: 'Arabic/French',
+    region: 'North Africa',
+    channelId: 'UCwwKGYz4oe4MWYLDkxYXPAA',
+    videoId: 'l1O6NbKdM_E',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'alaoula',
+    name: 'Al Aoula Morocco',
+    country: 'Morocco',
+    description: 'Moroccan state television',
+    logo: '🇲🇦',
+    language: 'Arabic',
+    region: 'North Africa',
+    channelId: 'UCeENN9ZPrfctQUKwZOdAOng',
+    videoId: 'WRhFz0kLqvw',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'medi1tv',
+    name: 'Medi1 TV',
+    country: 'Morocco',
+    description: 'Moroccan and African news',
+    logo: '🇲🇦',
+    language: 'Arabic/French',
+    region: 'North Africa',
+    channelId: 'UC5H5kuxYJcKEDNvjct5BgJg',
+    videoId: 'dQw4w9WgXcQ',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'espn_fc',
+    name: 'ESPN FC',
+    country: 'United States',
+    description: 'Football/Soccer news and analysis',
+    logo: '⚽',
+    language: 'English',
+    region: 'Sports',
+    channelId: 'UCim5N8S_Y8iZbCHZy_-bYmQ',
+    videoId: 'QHOV1lhW0Gg',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'olympic',
+    name: 'Olympic Channel',
+    country: 'International',
+    description: 'Olympic sports and events',
+    logo: '🏅',
+    language: 'English',
+    region: 'Sports',
+    channelId: 'UCTl3QQTvqHFjurroKxexy2Q',
+    videoId: 'rGHZ5fd_MWg',
+    isLive: true,
+    lastChecked: 0
+  },
+  {
+    id: 'fifa',
+    name: 'FIFA+',
+    country: 'International',
+    description: 'Football matches and highlights',
+    logo: '⚽',
+    language: 'English',
+    region: 'Sports',
+    channelId: 'UCPCF8i4bPw9K1BdqLVXw3Yw',
+    videoId: 'jNQXAC9IVRw',
+    isLive: true,
+    lastChecked: 0
+  }
+];
+
+export function YouTubeNewsCenter({ conflictData, intelEvents, selectedEventId, onEventClick }: YouTubeNewsCenterProps) {
+  const [currentChannelIndex, setCurrentChannelIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [showChannelList, setShowChannelList] = useState(false);
+  const [lastRotation, setLastRotation] = useState(Date.now());
+  const [channels, setChannels] = useState<LiveChannelData[]>(getFallbackChannels());
+  const [isLoading, setIsLoading] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [updateError, setUpdateError] = useState<string | null>(null);
+  const [refreshedAt, setRefreshedAt] = useState<number>(Date.now());
+
+  const currentChannel = channels[currentChannelIndex];
+
+  const isoMap: Record<string, string> = {
+    dw: 'de',
+    aljazeera: 'qa',
+    bbc: 'gb',
+    france24: 'fr',
+    skynews: 'gb',
+    trt: 'tr',
+    euronews: 'eu',
+    nhk: 'jp',
+    i24news: 'il',
+    cgtn: 'cn',
+    rt: 'ru',
+    abc: 'us',
+    nbc: 'us',
+    lbc: 'gb',
+    sky_aus: 'au',
+    cbc: 'ca',
+    ndtv: 'in',
+    wion: 'in',
+    '2m_morocco': 'ma',
+    alaoula: 'ma',
+    medi1tv: 'ma',
+    espn_fc: 'us',
+    olympic: 'un',
+    fifa: 'un',
+  };
+
+  // Initialize live service and start updates
+  useEffect(() => {
+    let backupInterval: NodeJS.Timeout | null = null;
+
+    const initializeService = async () => {
+      setIsLoading(true);
+      try {
+        console.log('YouTubeNewsCenter: Starting live service...');
+
+        // Start auto-update service (every 2 minutes)
+        youtubeLiveService.startAutoUpdate(2);
+
+        // Update channels immediately
+        await refreshChannels();
+
+        // Update channels every 30 seconds as backup
+        backupInterval = setInterval(refreshChannels, 30000);
+      } catch (error) {
+        console.error('YouTubeNewsCenter: Failed to initialize service:', error);
+        setUpdateError('Failed to initialize live service');
+        setIsLoading(false);
+      }
+    };
+
+    initializeService();
+
+    return () => {
+      youtubeLiveService.stopAutoUpdate();
+      if (backupInterval) {
+        clearInterval(backupInterval);
+      }
+    };
+  }, []);
+
+  // Refresh channels from live service
+  const refreshChannels = useCallback(async () => {
+    try {
+      setUpdateError(null);
+      await youtubeLiveService.updateAllChannels();
+      const updatedChannels = youtubeLiveService.getChannels();
+      setChannels(updatedChannels);
+      setLastUpdate(new Date());
+      setIsLoading(false);
+
+      const stats = youtubeLiveService.getStats();
+      console.log(`YouTubeNewsCenter: Channels updated. ${stats.live}/${stats.total} live`);
+    } catch (error) {
+      console.error('YouTubeNewsCenter: Failed to refresh channels:', error);
+      setUpdateError('Failed to refresh channels');
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Auto-rotate channels every 2 minutes (prefer live channels)
+  useEffect(() => {
+    if (!autoRotate || channels.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentChannelIndex((prev) => {
+        const liveChannels = channels.filter(channel => channel.isLive);
+
+        if (liveChannels.length === 0) {
+          // If no live channels, cycle through all channels
+          return (prev + 1) % channels.length;
+        }
+
+        // Find next live channel
+        const currentChannel = channels[prev];
+        const currentIndexInLive = liveChannels.findIndex(ch => ch.id === currentChannel.id);
+        const nextLiveChannel = liveChannels[(currentIndexInLive + 1) % liveChannels.length];
+        return channels.findIndex(ch => ch.id === nextLiveChannel.id);
+      });
+      setLastRotation(Date.now());
+    }, 120000); // 2 minutes
+
+    return () => clearInterval(interval);
+  }, [autoRotate, channels]);
+
+  const handleChannelChange = (index: number) => {
+    setCurrentChannelIndex(index);
+    setShowChannelList(false);
+    setLastRotation(Date.now());
+  };
+
+  const togglePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  const resetRotation = () => {
+    setAutoRotate(!autoRotate);
+  };
+
+  const refreshLiveStatus = async () => {
+    setIsLoading(true);
+    setRefreshedAt(Date.now());
+    await refreshChannels();
+    toast.success('Retuning Frequencies', {
+      description: 'Global news signals refreshed.',
+      duration: 2000
+    });
+  };
+
+  // Create YouTube embed URL with parameters
+  const getEmbedUrl = () => {
+    if (!currentChannel) return 'about:blank';
+
+    let baseUrl = '';
+
+    // Dynamic Live Stream Logic
+    // 1. Try direct video ID if explicitly provided (highest precision)
+    // 2. Fallback to channel live stream URL (most robust for 24/7 channels)
+    if (currentChannel.videoId && currentChannel.videoId.length > 5) {
+      baseUrl = `https://www.youtube.com/embed/${currentChannel.videoId}`;
+    } else if (currentChannel.channelId) {
+      baseUrl = `https://www.youtube.com/embed/live_stream?channel=${currentChannel.channelId}`;
+    } else {
+      return 'about:blank';
+    }
+
+    const params = new URLSearchParams({
+      autoplay: isPlaying ? '1' : '0',
+      mute: isMuted ? '1' : '0',
+      controls: '1',
+      rel: '0',
+      showinfo: '0',
+      modestbranding: '1',
+      fs: '1',
+      cc_load_policy: '0',
+      iv_load_policy: '3',
+      autohide: '0',
+      t: refreshedAt.toString() // Cache buster to force reload
+    });
+    return `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${params.toString()}`;
+  };
+
+  // Show loading state
+  if (isLoading && !currentChannel) {
+    return (
+      <div className="w-full h-full glass-panel flex items-center justify-center animate-pulse-subtle">
+        <div className="text-center">
+          <div className="relative inline-block mb-6">
+            <RefreshCw className="w-12 h-12 text-accent-primary animate-spin" />
+            <div className="absolute inset-0 bg-accent-primary/20 blur-xl rounded-full" />
+          </div>
+          <p className="text-lg font-bold text-white tracking-widest uppercase opacity-70">
+            Scanning Global Frequencies
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (updateError && !currentChannel) {
+    return (
+      <div className="w-full h-full bg-bg-base flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-4" />
+          <p className="text-red-400 mb-4">{updateError}</p>
+          <button
+            onClick={refreshLiveStatus}
+            className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/80 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentChannel) {
+    return (
+      <div className="w-full h-full bg-bg-base flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-text-secondary">No channels available</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full h-full bg-bg-base relative overflow-hidden">
+      {/* YouTube Player */}
+      <div className="w-full h-full relative">
+        <iframe
+          src={getEmbedUrl()}
+          className="w-full h-full border-0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          title={`${currentChannel.name} Live Stream`}
+        />
+
+        {/* Loading overlay */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-500">
+            <div className="text-center scale-75">
+              <RefreshCw className="w-10 h-10 text-accent-primary animate-spin mx-auto mb-4" />
+              <p className="text-xs font-bold text-accent-primary uppercase tracking-[0.2em]">Synchronizing</p>
+            </div>
+          </div>
+        )}
+
+        {/* Video Overlay Controls */}
+        <div className="absolute bottom-12 left-6 right-6 glass-panel rounded-xl p-3 shadow-2xl animate-floating z-20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={togglePlayPause}
+                className="flex items-center justify-center w-9 h-9 bg-accent-primary rounded-full hover:scale-110 active:scale-95 glow-on-hover shadow-lg transition-all duration-300"
+                title={isPlaying ? 'Pause' : 'Play'}
+              >
+                {isPlaying ? (
+                  <Pause className="w-4 h-4 text-white" />
+                ) : (
+                  <Play className="w-4 h-4 text-white ml-0.5" />
+                )}
+              </button>
+
+              <button
+                onClick={toggleMute}
+                className="flex items-center justify-center w-9 h-9 bg-bg-surface/40 backdrop-blur-md border border-white/10 rounded-full hover:bg-accent-primary/20 hover:scale-110 active:scale-95 transition-all duration-300"
+                title={isMuted ? 'Unmute' : 'Mute'}
+              >
+                {isMuted ? (
+                  <VolumeX className="w-4 h-4 text-accent-primary" />
+                ) : (
+                  <Volume2 className="w-4 h-4 text-accent-primary" />
+                )}
+              </button>
+
+              <div className="h-6 w-px bg-white/10 mx-1" />
+
+              <button
+                onClick={() => setShowChannelList(!showChannelList)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-bg-surface/40 backdrop-blur-md border border-white/0 hover:border-white/10 rounded-lg hover:bg-accent-primary/20 transition-all duration-300 group"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-white group-hover:text-accent-primary">
+                    {currentChannel.name}
+                  </span>
+                </div>
+              </button>
+
+              <button
+                onClick={refreshLiveStatus}
+                className={`flex items-center justify-center w-9 h-9 bg-bg-surface/40 backdrop-blur-md border border-white/10 rounded-full hover:bg-accent-primary/20 hover:scale-110 active:scale-95 transition-all duration-300 ${isLoading ? 'bg-accent-primary/20' : ''}`}
+                title="Refresh Live Status"
+              >
+                <RefreshCw className={`w-4 h-4 text-accent-primary ${isLoading ? 'animate-spin' : ''}`} />
+              </button>
+
+              <button
+                onClick={resetRotation}
+                className={`flex items-center justify-center w-9 h-9 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 ${autoRotate
+                  ? 'bg-accent-primary shadow-lg shadow-accent-primary/40'
+                  : 'bg-bg-surface/40 backdrop-blur-md border border-white/10 hover:bg-accent-primary/20'
+                  }`}
+                title={autoRotate ? 'Stop Auto-Rotate' : 'Start Auto-Rotate'}
+              >
+                <RotateCcw className={`w-4 h-4 ${autoRotate ? 'text-white' : 'text-accent-primary'}`} />
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className={`px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg transition-all duration-500 ${currentChannel.isLive
+                ? 'bg-red-500/20 text-red-400 border border-red-500/40 animate-heartbeat'
+                : 'bg-zinc-800 text-zinc-500 border border-zinc-700'
+                }`}>
+                {currentChannel.isLive ? (
+                  <>
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                    LIVE
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="w-3 h-3" />
+                    OFFLINE
+                  </>
+                )}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Channel List Overlay */}
+        {showChannelList && (
+          <div className="absolute top-24 left-6 bg-bg-surface/80 backdrop-blur-xl border border-white/10 rounded-xl p-3 w-64 max-h-[50vh] overflow-y-auto shadow-2xl z-30 animate-slide-up custom-scrollbar">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                News Grid
+              </h3>
+              <div className="flex flex-col items-end">
+                <span className="text-[10px] text-accent-primary font-bold">
+                  {channels.filter(c => c.isLive).length}/{channels.length} LIVE
+                </span>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              {channels.map((channel, index) => (
+                <button
+                  key={channel.id}
+                  onClick={() => handleChannelChange(index)}
+                  className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all duration-200 group ${index === currentChannelIndex
+                    ? 'bg-accent-primary/20 border border-accent-primary/40 shadow-inner'
+                    : 'hover:bg-white/5 border border-transparent hover:border-white/5'
+                    }`}
+                >
+                  <div className="relative">
+                    <div className="w-10 h-7 rounded overflow-hidden flex items-center justify-center bg-black/40 border border-white/10">
+                      {(() => {
+                        const resolved = resolveIso2(isoMap[channel.id], channel.country);
+                        return <Flag iso2={resolved} className="w-full h-full object-cover" />;
+                      })()}
+                    </div>
+                    {channel.isLive && (
+                      <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-bg-surface animate-pulse" />
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-sm font-medium truncate ${index === currentChannelIndex ? 'text-accent-primary' : 'text-white/80 group-hover:text-white'}`}>
+                      {channel.name}
+                    </div>
+                    <div className="text-[10px] text-white/40 group-hover:text-white/60">
+                      {channel.country}
+                    </div>
+                  </div>
+
+                  {index === currentChannelIndex && (
+                    <div className="w-1.5 h-1.5 bg-accent-primary rounded-full shadow-[0_0_8px_rgba(0,206,209,0.8)]" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Auto-rotation indicator */}
+        {autoRotate && (
+          <div className="absolute top-4 right-4 bg-accent-primary/80 backdrop-blur-sm rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+              <span className="text-xs font-medium text-white">
+                Auto-rotating channels
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Current channel info */}
+        <div className="absolute top-10 left-6 glass-panel rounded-xl p-3 max-w-xs shadow-2xl z-20 animate-floating border-l-4 border-l-accent-primary">
+          <div className="flex items-center gap-3 mb-1.5">
+            <div className="w-7 h-4 rounded overflow-hidden shadow-sm border border-white/10">
+              {(() => {
+                const resolved = resolveIso2(isoMap[currentChannel.id], currentChannel.country);
+                return <Flag value={currentChannel.logo} iso2={resolved} className="w-full h-full object-cover" />;
+              })()}
+            </div>
+            <h2 className="text-base font-black text-white tracking-tight">
+              {currentChannel.name}
+            </h2>
+          </div>
+          <p className="text-[10px] text-white/60 leading-relaxed mb-2.5 font-medium">
+            {currentChannel.description}
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 bg-accent-primary/20 rounded-md text-[10px] font-bold text-accent-primary uppercase tracking-wider border border-accent-primary/20">
+              {currentChannel.region}
+            </span>
+            <span className="px-2 py-0.5 bg-white/5 rounded-md text-[10px] font-bold text-white/40 uppercase tracking-wider border border-white/5">
+              {currentChannel.language}
+            </span>
+          </div>
+        </div>
+
+        {/* Live Events Counter */}
+        <div className="absolute bottom-32 right-6 glass-panel rounded-xl p-3 shadow-2xl z-20 animate-floating border-r-4 border-r-red-500/50">
+          <div className="flex flex-col gap-0.5">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping" />
+              <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Global Signals</span>
+            </div>
+            <div className="text-xl font-black text-white leading-none">
+              {intelEvents.length.toString().padStart(2, '0')}
+            </div>
+            {lastUpdate && (
+              <div className="text-[9px] font-bold text-accent-primary/60 mt-1.5 border-t border-white/5 pt-1.5">
+                SYNCED: {lastUpdate.toLocaleTimeString()}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Hidden events overlay for click interaction */}
+      <div className="absolute inset-0 pointer-events-none">
+        {intelEvents.map((event) => (
+          <div
+            key={event.id}
+            className={`absolute pointer-events-auto cursor-pointer transition-all duration-300 ${event.id === selectedEventId ? 'scale-110 z-10' : 'hover:scale-105'
+              }`}
+            style={{
+              left: `${20 + (event.location.lng + 180) * (60 / 360)}%`,
+              top: `${90 - (event.location.lat + 90) * (180 / 180)}%`,
+            }}
+            onClick={() => onEventClick(event)}
+          >
+            <div
+              className={`w-3 h-3 rounded-full border-2 ${event.id === selectedEventId
+                ? 'bg-accent-primary border-white shadow-lg shadow-accent-primary/50'
+                : 'bg-red-500 border-white hover:bg-red-400'
+                } animate-pulse`}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

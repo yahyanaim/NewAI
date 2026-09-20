@@ -1,0 +1,27 @@
+{
+  "todos": {
+    "Coordinator": {
+      "1": {
+        "id": "1",
+        "content": "Add account authentication system to geopolitical analysis website",
+        "details": "1. Implement Supabase Auth integration for user login/registration. 2. Create authentication context for managing user state. 3. Add login/register UI components. 4. Protect sensitive routes/actions behind authentication.",
+        "status": "completed",
+        "priority": "high"
+      },
+      "2": {
+        "id": "2",
+        "content": "Implement favorites management system",
+        "details": "1. Create favorites context for storing user preferences. 2. Add favorite/unfavorite functionality to news items. 3. Store favorites in Supabase database with user association. 4. Display favorites in user profile/dashboard.",
+        "status": "completed",
+        "priority": "high"
+      },
+      "3": {
+        "id": "3",
+        "content": "Enhance user experience with session management",
+        "details": "1. Implement auto-login for returning users. 2. Add user profile management. 3. Create user dashboard showing saved items and preferences. 4. Add logout functionality.",
+        "status": "completed",
+        "priority": "medium"
+      }
+    }
+  }
+}

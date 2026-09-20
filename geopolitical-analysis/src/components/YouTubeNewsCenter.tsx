@@ -52,12 +52,13 @@ export function YouTubeNewsCenter({ conflictData, intelEvents, selectedEventId, 
   const isoMap: Record<string, string> = {
     dw: 'de',
     aljazeera: 'qa',
-    bbc: 'gb',
     france24: 'fr',
     skynews: 'gb',
     trt: 'tr',
     euronews: 'eu',
+    wion: 'in',
     nhk: 'jp',
+    ndtv: 'in',
     i24news: 'il',
     cgtn: 'cn',
     rt: 'ru',
@@ -66,8 +67,6 @@ export function YouTubeNewsCenter({ conflictData, intelEvents, selectedEventId, 
     lbc: 'gb',
     sky_aus: 'au',
     cbc: 'ca',
-    ndtv: 'in',
-    wion: 'in',
     '2m_morocco': 'ma',
     alaoula: 'ma',
     medi1tv: 'ma',
@@ -587,16 +586,16 @@ export function YouTubeNewsCenter({ conflictData, intelEvents, selectedEventId, 
                   </div>
 
                   <div className="flex-1 min-w-0">
-                      <div className={`text-sm font-medium truncate ${index === currentChannelIndex
-                        ? 'text-accent-primary'
-                        : channel.status === 'unavailable'
-                          ? 'text-white/35 line-through'
-                          : 'text-white/80 group-hover:text-white'}`}>
-                        {channel.name}
-                      </div>
-                      <div className="text-[10px] text-white/40 group-hover:text-white/60">
-                        {channel.status === 'unavailable' ? 'no live stream' : channel.country}
-                      </div>
+                    <div className={`text-sm font-medium truncate ${index === currentChannelIndex
+                      ? 'text-accent-primary'
+                      : channel.status === 'unavailable'
+                        ? 'text-white/35 line-through'
+                        : 'text-white/80 group-hover:text-white'}`}>
+                      {channel.name}
+                    </div>
+                    <div className="text-[10px] text-white/40 group-hover:text-white/60">
+                      {channel.status === 'unavailable' ? 'no live stream' : channel.country}
+                    </div>
                   </div>
 
                   {index === currentChannelIndex && (

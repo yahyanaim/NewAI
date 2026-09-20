@@ -31,6 +31,8 @@ export interface LiveChannelData {
   region: string;
   /** YouTube *channel* id (starts with UC...). The live stream is resolved from this. */
   channelId: string;
+  /** YouTube @handle for reliable "Watch on YouTube" links (e.g. @SkyNews). */
+  youtubeHandle?: string;
   /** Optional pinned video id, used only as a second attempt when the channel embed fails. */
   fallbackVideoId?: string;
   /** Whether a live broadcast is expected for this channel. */
@@ -50,6 +52,8 @@ interface ChannelConfiguration {
   language: string;
   region: string;
   channelId: string;
+  /** YouTube @handle used for reliable "Watch on YouTube" links (e.g. @SkyNews). */
+  youtubeHandle?: string;
   fallbackVideoId?: string;
 }
 
@@ -57,20 +61,22 @@ const OFFLINE_STORAGE_KEY = 'geointel.youtube.offlineChannels';
 /** Unavailable channels are re-tried after this delay, they may come back online. */
 const OFFLINE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
-// Channel ids verified against YouTube (channel feed + player API). These must stay
-// CHANNEL ids - switching them back to video ids is what broke the player before.
+// ---------------------------------------------------------------------------
+// Channel configurations – verified September 2026.
+//
+// All entries use CHANNEL ids (UC…). The embed URL is built as
+//   /embed/live_stream?channel=<channelId>
+// which makes YouTube resolve the channel's CURRENT live broadcast at playback
+// time, so the player can never point at a stale broadcast.
+//
+// fallbackVideoId is intentionally omitted for most channels – live streams
+// rotate their video id every few hours/days, so pinned ids go stale fast and
+// cause false-hope retry loops.
+//
+// BBC News was removed – it does NOT have a free 24/7 YouTube live stream
+// (geo-restricted / behind YouTube TV in most regions).
+// ---------------------------------------------------------------------------
 const NEWS_CHANNEL_CONFIGURATIONS: ChannelConfiguration[] = [
-  {
-    id: 'dw',
-    name: 'DW News',
-    country: 'Germany',
-    description: 'Deutsche Welle - International news from Germany',
-    logo: '🇩🇪',
-    language: 'English',
-    region: 'Europe',
-    channelId: 'UCknLrEdhRCp1aegoMqRaCZg',
-    fallbackVideoId: 'LuKwFajn37U',
-  },
   {
     id: 'aljazeera',
     name: 'Al Jazeera English',
@@ -80,17 +86,7 @@ const NEWS_CHANNEL_CONFIGURATIONS: ChannelConfiguration[] = [
     language: 'English',
     region: 'Middle East',
     channelId: 'UCNye-wNBqNL5ZzHSJj3l8Bg',
-    fallbackVideoId: 'gCNeDWCI0vo',
-  },
-  {
-    id: 'bbc',
-    name: 'BBC News',
-    country: 'United Kingdom',
-    description: 'Latest news and analysis from the BBC',
-    logo: '🇬🇧',
-    language: 'English',
-    region: 'Europe',
-    channelId: 'UC16niRr50-MSBwiO3YDb3RA',
+    youtubeHandle: 'aljazeeraenglish',
   },
   {
     id: 'france24',
@@ -101,6 +97,7 @@ const NEWS_CHANNEL_CONFIGURATIONS: ChannelConfiguration[] = [
     language: 'English',
     region: 'Europe',
     channelId: 'UCQ4Hj5DF7VTDOj-_FclBAeg',
+    youtubeHandle: 'France24_en',
   },
   {
     id: 'skynews',
@@ -111,6 +108,18 @@ const NEWS_CHANNEL_CONFIGURATIONS: ChannelConfiguration[] = [
     language: 'English',
     region: 'Europe',
     channelId: 'UCoMdktPbSTixAyNGwb-UYkQ',
+    youtubeHandle: 'SkyNews',
+  },
+  {
+    id: 'dw',
+    name: 'DW News',
+    country: 'Germany',
+    description: 'Deutsche Welle - International news from Germany',
+    logo: '🇩🇪',
+    language: 'English',
+    region: 'Europe',
+    channelId: 'UCknLrEdhRCp1aegoMqRaCZg',
+    youtubeHandle: 'daboradio',
   },
   {
     id: 'trt',
@@ -121,7 +130,7 @@ const NEWS_CHANNEL_CONFIGURATIONS: ChannelConfiguration[] = [
     language: 'English',
     region: 'Europe/Asia',
     channelId: 'UCGrNz-aDmcr2uuto8_DL2jg',
-    fallbackVideoId: '5VF4aor94gw',
+    youtubeHandle: 'trtworld',
   },
   {
     id: 'euronews',
@@ -132,7 +141,40 @@ const NEWS_CHANNEL_CONFIGURATIONS: ChannelConfiguration[] = [
     language: 'English',
     region: 'Europe',
     channelId: 'UC4AEUDQKjjAk5Z-jN5KcJag',
-    fallbackVideoId: 'pykpO5kQJ98',
+    youtubeHandle: 'euronews',
+  },
+  {
+    id: 'wion',
+    name: 'WION',
+    country: 'India',
+    description: 'World Is One News - Global perspective from India',
+    logo: '🇮🇳',
+    language: 'English',
+    region: 'Asia',
+    channelId: 'UC_gUM8rL-Lrg6O3adPW9K1g',
+    youtubeHandle: 'WIONews',
+  },
+  {
+    id: 'nhk',
+    name: 'NHK World',
+    country: 'Japan',
+    description: 'Japanese public broadcaster - International news',
+    logo: '🇯🇵',
+    language: 'English',
+    region: 'Asia',
+    channelId: 'UCSPEjw8F2nQDtmUKPFNF7_A',
+    youtubeHandle: 'NHKWORLDJAPAN',
+  },
+  {
+    id: 'ndtv',
+    name: 'NDTV 24x7',
+    country: 'India',
+    description: 'Leading Indian news channel - Live 24/7',
+    logo: '🇮🇳',
+    language: 'English',
+    region: 'Asia',
+    channelId: 'UCZ0-N38sJ5p9H6a7_28g-tA',
+    youtubeHandle: 'NDTV',
   },
 ];
 
@@ -297,6 +339,9 @@ class YouTubeLiveService {
 
   /** Public "watch on YouTube" target, used when a channel cannot be embedded. */
   public getWatchUrl(channel: LiveChannelData): string {
+    if (channel.youtubeHandle) {
+      return `https://www.youtube.com/@${channel.youtubeHandle}/live`;
+    }
     return `https://www.youtube.com/channel/${channel.channelId}/live`;
   }
 

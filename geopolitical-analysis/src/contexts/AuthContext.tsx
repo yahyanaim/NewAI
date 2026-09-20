@@ -61,12 +61,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (!error && data.user) {
-      // Create user profile
-      await supabase.from('user_profiles').insert({
-        id: data.user.id,
-        email: data.user.email,
-        display_name: displayName || email.split('@')[0]
-      });
+      try {
+        // Attempt to create user profile. If email confirmations are ON, the user doesn't
+        // have an active session yet, so this insert will fail RLS. We catch and ignore it
+        // because the primary goal of signUp is creating the auth account. 
+        await supabase.from('user_profiles').insert({
+          id: data.user.id,
+          email: data.user.email,
+          display_name: displayName || email.split('@')[0]
+        });
+      } catch (err) {
+        console.debug('Could not create user profile yet (expected if email confirmation is required).', err);
+      }
     }
 
     return { error };
